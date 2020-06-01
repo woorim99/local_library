@@ -1,6 +1,29 @@
 from django.db import models
 
 # Create your models here.
+
+class MyModelName(models.Model):
+    """A typical class defining a model, derived from the Model class."""
+
+    # Fields
+    my_field_name = models.CharField(max_length=20, help_text='Enter field documentation')
+    ...
+
+    # Metadata
+    class Meta: 
+        ordering = ['-my_field_name']
+        verbose_name = 'BetterName'
+
+    # Methods
+    def get_absolute_url(self):
+        """Returns the url to access a particular instance of MyModelName."""
+        return reverse('model-detail-view', args=[str(self.id)])
+
+    def __str__(self):
+        """String for representing the MyModelName object (in Admin site etc.)."""
+        return self.field_name
+
+
 class Genre(models.Model):
     """Model representing a book genre."""
     name = models.CharField(max_length=200, help_text='Enter a book genre (e.g. Science Fiction)')
@@ -32,6 +55,12 @@ class Book(models.Model):
     def get_absolute_url(self):
         """Returns the url to access a detail record for this book."""
         return reverse('book-detail', args=[str(self.id)])
+
+    def display_genre(self):
+        """Create a string for the Genre. This is required to display genre in Admin."""
+        return ', '.join(genre.name for genre in self.genre.all()[:3])
+    
+    display_genre.short_description = 'Genre'
 
 import uuid # Required for unique book instances
 
