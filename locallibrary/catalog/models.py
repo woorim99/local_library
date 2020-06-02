@@ -3,6 +3,8 @@ from django.db import models
 # Create your models here.
 
 from django.urls import reverse
+from django.contrib.auth.models import User
+from datetime import date
 
 class MyModelName(models.Model):
     """A typical class defining a model, derived from the Model class."""
@@ -87,6 +89,14 @@ class BookInstance(models.Model):
         default='m',
         help_text='Book availability',
     )
+
+    borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    @property
+    def is_overdue(self):
+        if self.due_back and date.today() > self.due_back:
+            return True
+        return False
 
     class Meta:
         ordering = ['due_back']
